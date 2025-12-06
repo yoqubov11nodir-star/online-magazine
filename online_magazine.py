@@ -114,24 +114,36 @@ def check_window(order_id, items, total):
 
 def add_to_cart(user, market):
     print("\nMahsulotlar: ")
-    for product in market.products:
-        print(f"{product.name} | Price: {product.price} | Count: {product.count}")
 
-    name = input("\nTanlangan mahsulot nomi: ").capitalize()
-    amount = int(input("Miqdori: "))
+    if not market.products:
+        print("Maxsulot yo'q")
+        return
 
-    for p in market.products:
-        if p.name == name:
-            if p.count >= amount:
-                if p.name in user.bag:
-                    user.bag[p.name]["amount"] += amount
-                else:
-                    user.bag[p.name] = {"product": p, "amount": amount}
-                print("Savatga qo'shildi")
-            else:
-                print("Yetarli miqdor yo'q")
-            return
-    print("Maxsulot topilmadi")
+    for i, product in enumerate(market.products, start=1):
+        print(f"{i}. {product.name} | Price: {product.price} | Count: {product.count}")
+
+    try:
+        index = int(input("\nMahsulot raqami: ")) - 1
+        amount = int(input("Miqdori: "))
+    except ValueError:
+        print("Faqat raqam kiriting!")
+        return
+
+    if index < 0 or index >= len(market.products):
+        print("Noto‘g‘ri raqam kiritildi!")
+        return
+
+    p = market.products[index]
+
+    if p.count >= amount:
+        if p.name in user.bag:
+            user.bag[p.name]["amount"] += amount
+        else:
+            user.bag[p.name] = {"product": p, "amount": amount}
+
+        print("Savatga qo‘shildi!")
+    else:
+        print("Yetarli miqdor mavjud emas!")
 
 def checkout(user, market):
     if not user.bag:
